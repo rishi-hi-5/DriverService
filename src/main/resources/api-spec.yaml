@@ -1,0 +1,155 @@
+openapi: 3.0.3
+info:
+  title: Driver Management API
+  version: 1.0.0
+  description: API documentation for customer, driver, and trip services.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: drivers
+    description: Operations related to drivers
+
+paths:
+
+  /api/drivers:
+    post:
+      tags:
+        - drivers
+      summary: Register a new driver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverRequest'
+      responses:
+        '201':
+          description: Driver registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverResponse'
+
+  /drivers/{driverId}:
+    get:
+      tags:
+        - drivers
+      summary: Get driver information
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Driver details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverResponse"
+        "404":
+          description: Driver not found
+    put:
+      tags:
+        - drivers
+      summary: Update driver information
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverUpdateRequest"
+      responses:
+        "200":
+          description: Driver updated successfully
+        "400":
+          description: Invalid request data
+        "404":
+          description: Driver not found
+    delete:
+      tags:
+        - drivers
+      summary: Delete a driver
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Driver deleted
+
+components:
+  schemas:
+    DriverRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+    DriverResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "johndoe@example.com"
+        phone:
+          type: string
+          example: "+1234567890"
+        licenseNumber:
+          type: string
+          example: "DL12345678"
+        vehicleId:
+          type: string
+          nullable: true
+          example: "MH12MN1234"
+        status:
+          type: string
+          enum: ["AVAILABLE", "ON_TRIP","SUSPENDED"]
+          example: "AVAILABLE"
+
+    DriverUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        phone:
+          type: string
+          example: "+9876543210"
+        email:
+          type: string
+          format: email
+          example: "johndoe@example.com"
+        status:
+          type: string
+          enum: ["AVAILABLE", "ON_TRIP","SUSPENDED"]
+          example: "AVAILABLE"
+        licenseNumber:
+          type: string
+          example: "DL12345678"
+        vehicleId:
+          type: string
+          nullable: true
+          example: "MH12MN1234"
