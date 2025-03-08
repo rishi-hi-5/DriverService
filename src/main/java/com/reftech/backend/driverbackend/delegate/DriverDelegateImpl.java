@@ -1,11 +1,10 @@
 package com.reftech.backend.driverbackend.delegate;
 
-import com.reftech.backend.driverbackend.api.DriverRequest;
-import com.reftech.backend.driverbackend.api.DriverResponse;
-import com.reftech.backend.driverbackend.api.DriverUpdateRequest;
-import com.reftech.backend.driverbackend.api.DriversApiDelegate;
+import com.reftech.backend.driverbackend.api.*;
 import com.reftech.backend.driverbackend.service.DriverService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -19,7 +18,7 @@ public class DriverDelegateImpl implements DriversApiDelegate {
 
     private final DriverService driverService;
 
-    public Mono<ResponseEntity<DriverResponse>> apiDriversPost(Mono<DriverRequest> driverRequest,
+    public Mono<ResponseEntity<DriverResponse>> driversPost(Mono<DriverRequest> driverRequest,
                                                                 ServerWebExchange exchange) {
         return driverService.registerDriver(driverRequest)
                 .map(ResponseEntity::ok)
@@ -40,11 +39,23 @@ public class DriverDelegateImpl implements DriversApiDelegate {
 
     }
 
-    public Mono<ResponseEntity<Void>> driversDriverIdPut(UUID driverId,
+    public Mono<ResponseEntity<DriverResponse>> driversDriverIdPut(UUID driverId,
                                                           Mono<DriverUpdateRequest> driverUpdateRequest,
                                                           ServerWebExchange exchange) {
         return driverService.updateDriver(driverId, driverUpdateRequest)
-                .then(Mono.just(ResponseEntity.noContent().build()));
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
+
+    public Mono<ResponseEntity<PaginatedDriversResponse>> driversGet(Integer page,
+                                                                      Integer size,
+                                                                      String sort,
+                                                                      String direction,
+                                                                      ServerWebExchange exchange) {
+        return driverService.getAllDrivers(page,size,sort,direction)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
 
 }

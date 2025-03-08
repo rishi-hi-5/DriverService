@@ -20,6 +20,8 @@ public class Driver implements Persistable<UUID> {
     String name;
     String phone;
 
+    String email;
+
     @Column("vehicleId")
     String vehicleId;
 
@@ -37,6 +39,6 @@ public class Driver implements Persistable<UUID> {
 
     @Override
     public boolean isNew() {
-        return createdAt == null;
+        return id == null;
     }
 }
